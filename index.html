@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#6B2D5C">
+  <title>Habibi Sparks</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Lottie (dotLottie) player -->
+  <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+  <!-- QR-code (client-side, geen server nodig) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+  <!-- Achtergrond: rozenblaadjes -->
+  <div class="petals" aria-hidden="true">
+    <span class="petal"></span><span class="petal"></span><span class="petal"></span>
+    <span class="petal"></span><span class="petal"></span><span class="petal"></span>
+    <span class="petal"></span><span class="petal"></span><span class="petal"></span>
+    <span class="petal"></span><span class="petal"></span><span class="petal"></span>
+  </div>
+
+  <!-- Laag voor kusjes/hartjes -->
+  <div class="burst-layer" id="burstLayer" aria-hidden="true"></div>
+
+  <main class="app">
+    <header class="app-header">
+      <h1 class="logo">Habibi Sparks <span class="spark">✨</span></h1>
+      <p class="tagline">Liefde, Koran &amp; Sunnah in gesprek</p>
+    </header>
+
+    <!-- ===== 1. STARTSCHERM ===== -->
+    <section class="screen active" id="screen-start">
+      <div class="card card--center">
+        <!--
+          LOTTIE PLACEHOLDER (startscherm)
+          Vervang de src door een eigen .lottie of .json van een minimalistisch koppel
+          (bijv. via lottiefiles.com, download als dotLottie). Zolang de src niet laadt,
+          blijft het emoji-vangnet eronder zichtbaar.
+        -->
+        <div class="lottie-wrap">
+          <span class="lottie-fallback">💑</span>
+          <dotlottie-player
+            src="https://lottie.host/REPLACE-WITH-YOUR-COUPLE-ANIMATION.lottie"
+            background="transparent" speed="1" loop autoplay>
+          </dotlottie-player>
+        </div>
+
+        <h2>Welkom, habibi &amp; habibti</h2>
+        <p>Beantwoord samen speelse vragen, ontdek waar jullie op één lijn zitten en praat verder met de gesprekskaarten.</p>
+
+        <div class="field">
+          <label for="playerName">Jouw naam</label>
+          <input id="playerName" type="text" maxlength="20" placeholder="bijv. Amira" autocomplete="off">
+        </div>
+
+        <div class="btn-row">
+          <button class="btn" id="btnCreate">Kamer maken 💞</button>
+          <button class="btn btn--ghost" id="btnJoin">Ik heb een code</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 2. WACHTRUIMTE / ROOM JOIN ===== -->
+    <section class="screen" id="screen-lobby">
+      <div class="card card--center">
+        <span class="category-chip">💌 Wachtruimte</span>
+        <h2>Nodig je partner uit</h2>
+        <p>Laat partner B de QR-code scannen of de kamercode invoeren.</p>
+
+        <div class="room-id" id="roomIdDisplay">HABIBI-ROOS</div>
+
+        <div>
+          <div class="qr-frame"><div id="qrcode"></div></div>
+        </div>
+
+        <div class="partner-status">
+          <span class="player-pill ready" id="pillA"><span class="dot"></span><span id="nameA">Jij</span></span>
+          <span class="player-pill waiting" id="pillB"><span class="dot"></span><span id="nameB">Wacht op partner…</span></span>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn--ghost" id="btnCopy">Code kopiëren</button>
+          <button class="btn" id="btnStart" disabled>Start de sparks ✨</button>
+        </div>
+      </div>
+
+      <!-- Deelnemen met code -->
+      <div class="card card--center" id="joinBox" hidden>
+        <div class="field">
+          <label for="joinCode">Kamercode</label>
+          <input id="joinCode" type="text" placeholder="HABIBI-XXXX" autocomplete="off" style="text-transform:uppercase">
+        </div>
+        <button class="btn btn--block" id="btnJoinGo">Deelnemen 💗</button>
+      </div>
+    </section>
+
+    <!-- ===== 3. VRAAGSCHERM ===== -->
+    <section class="screen" id="screen-question">
+      <div class="card">
+        <div class="progress"><span id="progressBar"></span></div>
+        <span class="category-chip" id="qCategory">💌 Categorie</span>
+        <h2 class="question-text" id="qText">Vraag</h2>
+        <div class="options" id="qOptions"></div>
+        <div class="btn-row">
+          <button class="btn" id="btnLock" disabled>Vergrendel mijn antwoord 🔒</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 4. WACHTEN OP PARTNER ===== -->
+    <section class="screen" id="screen-wait">
+      <div class="card card--center">
+        <div class="lottie-wrap" style="width:120px">
+          <span class="lottie-fallback" style="font-size:3rem">💗</span>
+        </div>
+        <h2>Antwoord vergrendeld</h2>
+        <p>We wachten tot je partner ook gekozen heeft…</p>
+      </div>
+    </section>
+
+    <!-- ===== 5. MATCH-REVEAL ===== -->
+    <section class="screen" id="screen-reveal">
+      <div class="card card--center">
+        <div id="matchBadge" class="match-badge match"><span class="kiss-pop">💋</span> Match!</div>
+        <div class="reveal-grid">
+          <div class="reveal-box"><small id="revNameA">Jij</small><span id="revTextA"></span></div>
+          <div class="reveal-box"><small id="revNameB">Partner</small><span id="revTextB"></span></div>
+        </div>
+        <p id="revNote"></p>
+        <button class="btn btn--block" id="btnOpenCard">Open de gesprekskaart 💌</button>
+      </div>
+    </section>
+
+    <!-- ===== 6. RESULTATEN ===== -->
+    <section class="screen" id="screen-results">
+      <div class="card card--center">
+        <!-- LOTTIE PLACEHOLDER (resultatenscherm): zelfde of andere animatie -->
+        <div class="lottie-wrap" style="width:min(200px,60%)">
+          <span class="lottie-fallback">🥰</span>
+          <dotlottie-player
+            src="https://lottie.host/REPLACE-WITH-YOUR-CELEBRATION-ANIMATION.lottie"
+            background="transparent" speed="1" loop autoplay>
+          </dotlottie-player>
+        </div>
+        <h2>Jullie sparks <span class="sparkle">✨</span></h2>
+        <div class="score-ring" id="scoreRing" style="--pct:0">
+          <strong id="scoreValue">0%</strong>
+          <span class="heart-top">💗</span>
+        </div>
+        <p id="scoreText"></p>
+        <div class="btn-row">
+          <button class="btn" id="btnAgain">Nog een ronde 💞</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== GESPREKSKAART-OVERLAY ===== -->
+  <div class="overlay" id="convoOverlay" role="dialog" aria-modal="true" aria-labelledby="convoTitle">
+    <article class="convo-card">
+      <span class="corner tl">✨</span><span class="corner tr">💋</span>
+      <span class="corner bl">💗</span><span class="corner br">✨</span>
+
+      <div class="convo-kicker" id="convoKicker">Gesprekskaart</div>
+      <h2 class="convo-title" id="convoTitle">Inzicht</h2>
+
+      <p class="convo-prompt" id="convoPrompt"></p>
+
+      <div class="convo-context">
+        <b>🌙 Islamitische context</b>
+        <span id="convoContext"></span>
+      </div>
+
+      <button class="btn btn--block" id="btnNext">Verder naar de volgende vraag →</button>
+    </article>
+  </div>
+
+<script>
+/* =========================================================
+   Habibi Sparks – demo-logica (client-side)
+   Alles hieronder werkt lokaal, zonder Firebase, zodat je
+   direct kunt testen. De plekken waar Firebase komt, zijn
+   gemarkeerd met  // FIREBASE:
+   ========================================================= */
+
+/* Voorgestelde Firebase Realtime Database-structuur:
+   /rooms/{roomId}
+      meta:     { createdAt, status: "lobby"|"playing"|"done", currentIndex }
+      players:  { A: {name, ready}, B: {name, ready} }
+      answers:  { {questionId}: { A: "a", B: "c" } }
+   /content (de inhoud van questions.json)
+*/
+
+const $ = (id) => document.getElementById(id);
+const state = {
+  roomId: null,
+  me: "A",
+  nameA: "Jij",
+  nameB: "Partner",
+  questions: [],
+  index: 0,
+  chosen: null,
+  matches: 0
+};
+
+/* ---------- Schermen ---------- */
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  $(id).classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ---------- Kusjes / hartjes / sprankels ---------- */
+function burst(emojis = ["💋","💗","✨","💕"], count = 14, origin) {
+  const layer = $("burstLayer");
+  const ox = origin ? origin.x : window.innerWidth / 2;
+  const oy = origin ? origin.y : window.innerHeight * 0.55;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement("span");
+    el.className = "burst-item";
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.setProperty("--x", (ox + (Math.random() - .5) * 120) + "px");
+    el.style.setProperty("--y", (oy + (Math.random() - .5) * 40) + "px");
+    el.style.setProperty("--dx", ((Math.random() - .5) * 220) + "px");
+    el.style.setProperty("--dy", (140 + Math.random() * 260) + "px");
+    el.style.setProperty("--rot", ((Math.random() - .5) * 60) + "deg");
+    el.style.setProperty("--size", (1.2 + Math.random() * 1.6) + "rem");
+    el.style.setProperty("--dur", (1.4 + Math.random() * 1.2) + "s");
+    el.style.animationDelay = (Math.random() * .35) + "s";
+    layer.appendChild(el);
+    setTimeout(() => el.remove(), 3200);
+  }
+}
+
+/* ---------- Kamer-ID & QR ---------- */
+function makeRoomId(custom) {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let suffix = custom ? custom.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8) : "";
+  if (!suffix) {
+    suffix = Array.from({ length: 4 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join("");
+  }
+  return "HABIBI-" + suffix;           // bv. HABIBI-ROOS
+}
+
+function renderQR(roomId) {
+  const holder = $("qrcode");
+  holder.innerHTML = "";
+  const url = location.origin + location.pathname + "?room=" + encodeURIComponent(roomId);
+  if (window.QRCode) {
+    new QRCode(holder, {
+      text: url, width: 190, height: 190,
+      colorDark: "#6B2D5C", colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } else {
+    holder.textContent = url;          // vangnet als de CDN niet laadt
+  }
+}
+
+function enterLobby(roomId, asPlayer) {
+  state.roomId = roomId;
+  state.me = asPlayer;
+  $("roomIdDisplay").textContent = roomId;
+  $("nameA").textContent = state.nameA;
+  renderQR(roomId);
+  show("screen-lobby");
+  // FIREBASE: set(ref(db, `rooms/${roomId}/players/${asPlayer}`), { name, ready: true });
+  // FIREBASE: onValue(ref(db, `rooms/${roomId}/players/B`), snap => { ...zet pillB op 'ready'... });
+
+  // Demo: simuleer dat partner B na 2,5 s binnenkomt
+  setTimeout(() => {
+    state.nameB = "Partner";
+    $("nameB").textContent = state.nameB;
+    $("pillB").classList.remove("waiting");
+    $("pillB").classList.add("ready");
+    $("btnStart").disabled = false;
+    burst(["💗","✨"], 8);
+  }, 2500);
+}
+
+/* ---------- Vragen laden ---------- */
+const FALLBACK_QUESTIONS = [{
+  id: "demo", category: "Liefdestalen & Ihsan", type: "couple_alignment",
+  questionText: "Wat laat jou het meest voelen dat je partner van je houdt?",
+  options: [{id:"a",text:"Woorden"},{id:"b",text:"Tijd"},{id:"c",text:"Daden"},{id:"d",text:"Cadeautjes"}],
+  conversationCard: { insightTitle: "Liefde spreekt meer dan één taal", discussionPrompt: "Vertel elkaar wanneer je je geliefd voelde.", islamicContext: "Koran 30:21." }
+}];
+
+async function loadQuestions() {
+  try {
+    // FIREBASE: get(child(ref(db), "questions")) i.p.v. fetch
+    const res = await fetch("questions.json", { cache: "no-store" });
+    const data = await res.json();
+    state.categoryMeta = data.categories;
+    state.questions = Object.values(data.questions).sort((a, b) =>
+      (data.categories[a.categoryId]?.order - data.categories[b.categoryId]?.order) || (a.order - b.order));
+  } catch (e) {
+    console.warn("questions.json niet geladen, demo-vraag gebruikt", e);
+    state.questions = FALLBACK_QUESTIONS;
+  }
+}
+
+/* ---------- Vraag tonen ---------- */
+const LETTERS = ["A","B","C","D"];
+
+function renderQuestion() {
+  const q = state.questions[state.index];
+  state.chosen = null;
+  $("btnLock").disabled = true;
+  const icon = state.categoryMeta?.[q.categoryId]?.icon || "💌";
+  $("qCategory").textContent = icon + " " + q.category;
+  $("qText").textContent = q.questionText;
+  $("progressBar").style.width = ((state.index) / state.questions.length * 100) + "%";
+
+  const box = $("qOptions");
+  box.innerHTML = "";
+  q.options.forEach((opt, i) => {
+    const b = document.createElement("button");
+    b.className = "option";
+    b.dataset.letter = LETTERS[i];
+    b.textContent = opt.text;
+    b.addEventListener("click", (ev) => {
+      box.querySelectorAll(".option").forEach(o => o.classList.remove("selected"));
+      b.classList.add("selected");
+      state.chosen = opt;
+      $("btnLock").disabled = false;
+      const r = b.getBoundingClientRect();
+      burst(["💗","✨"], 4, { x: r.left + 30, y: r.top + r.height / 2 });
+    });
+    box.appendChild(b);
+  });
+  show("screen-question");
+}
+
+/* ---------- Antwoord vergrendelen & reveal ---------- */
+function lockAnswer() {
+  const q = state.questions[state.index];
+  show("screen-wait");
+  // FIREBASE: set(ref(db, `rooms/${state.roomId}/answers/${q.id}/${state.me}`), state.chosen.id);
+  // FIREBASE: onValue(ref(db, `rooms/${state.roomId}/answers/${q.id}`), snap => { als A én B bestaan → reveal(...) });
+
+  // Demo: partner kiest willekeurig na 1,6 s
+  setTimeout(() => {
+    const partnerOpt = q.options[Math.floor(Math.random() * q.options.length)];
+    reveal(q, state.chosen, partnerOpt);
+  }, 1600);
+}
+
+function reveal(q, mine, theirs) {
+  const isMatch = mine.id === theirs.id;
+  if (isMatch) state.matches++;
+
+  $("revNameA").textContent = state.nameA;
+  $("revNameB").textContent = state.nameB;
+  $("revTextA").textContent = mine.text;
+  $("revTextB").textContent = theirs.text;
+
+  const badge = $("matchBadge");
+  if (isMatch) {
+    badge.className = "match-badge match";
+    badge.innerHTML = '<span class="kiss-pop">💋</span> Match! <span class="sparkle">✨</span>';
+    $("revNote").textContent = "Jullie zitten op één lijn. Vier het even!";
+  } else {
+    badge.className = "match-badge differ";
+    badge.innerHTML = '<span class="heart-beat">💗</span> Een spark!';
+    $("revNote").textContent = "Jullie kiezen verschillend, en dat is precies waar het gesprek begint.";
+  }
+  show("screen-reveal");
+  burst(isMatch ? ["💋","💗","✨","💕","💋"] : ["✨","💗"], isMatch ? 22 : 10);
+}
+
+/* ---------- Gesprekskaart-overlay ---------- */
+function openCard() {
+  const q = state.questions[state.index];
+  const c = q.conversationCard;
+  $("convoKicker").textContent = "Gesprekskaart · " + q.category;
+  $("convoTitle").textContent = c.insightTitle;
+  $("convoPrompt").textContent = c.discussionPrompt;
+  $("convoContext").textContent = c.islamicContext;
+  $("btnNext").textContent = (state.index === state.questions.length - 1)
+    ? "Bekijk jullie sparks ✨" : "Verder naar de volgende vraag →";
+  $("convoOverlay").classList.add("open");
+  burst(["✨","💗","💋"], 10);
+}
+
+function nextStep() {
+  $("convoOverlay").classList.remove("open");
+  state.index++;
+  if (state.index < state.questions.length) {
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function showResults() {
+  const pct = Math.round(state.matches / state.questions.length * 100);
+  $("scoreValue").textContent = pct + "%";
+  $("scoreRing").style.setProperty("--pct", pct);
+  $("scoreText").textContent =
+    pct >= 70 ? "Wat een harmonie! Blijf elkaar verrassen." :
+    pct >= 40 ? "Mooie mix van gelijkheid en verschil: dat geeft stof voor gesprek." :
+                "Veel verschillen, dus veel om samen te ontdekken. Neem de gesprekskaarten nog eens door.";
+  show("screen-results");
+  burst(["💋","💗","✨","💕","🌹"], 30);
+}
+
+/* ---------- Events ---------- */
+$("btnCreate").addEventListener("click", async () => {
+  state.nameA = $("playerName").value.trim() || "Jij";
+  await loadQuestions();
+  enterLobby(makeRoomId(), "A");            // bv. makeRoomId("ROOS") → HABIBI-ROOS
+});
+
+$("btnJoin").addEventListener("click", () => {
+  $("joinBox").hidden = false;
+  show("screen-lobby");
+  document.querySelector("#screen-lobby > .card").hidden = true;
+});
+
+$("btnJoinGo").addEventListener("click", async () => {
+  const code = $("joinCode").value.trim().toUpperCase();
+  if (!code) return;
+  state.nameA = $("playerName").value.trim() || "Partner B";
+  await loadQuestions();
+  document.querySelector("#screen-lobby > .card").hidden = false;
+  $("joinBox").hidden = true;
+  enterLobby(code, "B");
+});
+
+$("btnCopy").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText(state.roomId); $("btnCopy").textContent = "Gekopieerd ✓"; }
+  catch { $("btnCopy").textContent = state.roomId; }
+});
+
+$("btnStart").addEventListener("click", () => {
+  state.index = 0; state.matches = 0;
+  renderQuestion();
+});
+$("btnLock").addEventListener("click", lockAnswer);
+$("btnOpenCard").addEventListener("click", openCard);
+$("btnNext").addEventListener("click", nextStep);
+$("btnAgain").addEventListener("click", () => { state.index = 0; state.matches = 0; show("screen-start"); });
+
+/* QR-scan: ?room=HABIBI-ROOS vult de code automatisch in */
+(function autoJoinFromUrl() {
+  const room = new URLSearchParams(location.search).get("room");
+  if (room) {
+    $("joinCode").value = room.toUpperCase();
+    $("joinBox").hidden = false;
+    show("screen-lobby");
+    document.querySelector("#screen-lobby > .card").hidden = true;
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,500 @@
+/* =========================================================
+   Habibi Sparks – style.css
+   Palet: plum #6B2D5C · rosé-goud #D4A373 / #E8B4B8 · crème #FAEDCD
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,500&display=swap');
+
+:root {
+  --plum: #6B2D5C;
+  --plum-deep: #4A1D40;
+  --plum-soft: #8A4A79;
+  --gold: #D4A373;
+  --rose: #E8B4B8;
+  --cream: #FAEDCD;
+  --cream-light: #FFF8EA;
+  --petal-red: #B3203F;
+  --petal-red-dark: #7E1230;
+  --ink: #3A1830;
+  --ink-soft: #6F4B64;
+  --success: #5E9F7A;
+
+  --radius-lg: 28px;
+  --radius-md: 20px;
+  --radius-pill: 999px;
+
+  --shadow-soft: 0 10px 30px rgba(107, 45, 92, 0.15);
+  --shadow-card: 0 18px 50px rgba(107, 45, 92, 0.22);
+  --shadow-glow: 0 0 0 4px rgba(212, 163, 115, 0.35), 0 10px 30px rgba(212, 163, 115, 0.35);
+
+  --font-body: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; min-height: 100%; }
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  line-height: 1.55;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(232, 180, 184, 0.55), transparent 60%),
+    radial-gradient(900px 500px at 100% 10%, rgba(212, 163, 115, 0.35), transparent 60%),
+    radial-gradient(900px 600px at 50% 120%, rgba(107, 45, 92, 0.28), transparent 65%),
+    var(--cream);
+  background-attachment: fixed;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { font-family: var(--font-display); color: var(--plum); line-height: 1.2; margin: 0 0 .5em; }
+p { margin: 0 0 1em; }
+
+/* ---------- Layout ---------- */
+.app {
+  position: relative;
+  z-index: 2;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 20px 18px 60px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  text-align: center;
+  padding: 10px 0 18px;
+}
+.logo {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 7vw, 2.6rem);
+  font-weight: 700;
+  color: var(--plum);
+  letter-spacing: .5px;
+  margin: 0;
+}
+.logo .spark { display: inline-block; animation: twinkle 2.4s ease-in-out infinite; }
+.tagline { color: var(--ink-soft); font-style: italic; font-family: var(--font-display); margin: 4px 0 0; }
+
+.screen { display: none; animation: screenIn .5s ease both; }
+.screen.active { display: block; }
+
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(14px) scale(.985); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------- Kaarten ---------- */
+.card {
+  background: rgba(255, 248, 234, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(212, 163, 115, 0.55);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 26px 22px;
+  margin-bottom: 18px;
+  position: relative;
+}
+.card--center { text-align: center; }
+
+.category-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, var(--rose), var(--gold));
+  color: var(--plum-deep);
+  font-weight: 800;
+  font-size: .8rem;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 14px;
+}
+
+.progress {
+  height: 8px;
+  background: rgba(107, 45, 92, .12);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.progress > span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--rose), var(--gold), var(--plum));
+  border-radius: inherit;
+  transition: width .6s cubic-bezier(.4, 1.4, .6, 1);
+}
+
+.question-text { font-size: clamp(1.25rem, 4.8vw, 1.55rem); }
+
+/* ---------- Knoppen & inputs ---------- */
+.btn {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 1.02rem;
+  padding: 14px 26px;
+  border-radius: var(--radius-pill);
+  color: var(--cream-light);
+  background: linear-gradient(135deg, var(--plum-soft), var(--plum) 55%, var(--plum-deep));
+  box-shadow: 0 8px 20px rgba(107, 45, 92, .35), inset 0 0 0 1.5px rgba(212, 163, 115, .7);
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+.btn:hover { transform: translateY(-2px) scale(1.02); filter: brightness(1.08); }
+.btn:active { transform: translateY(0) scale(.98); }
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.btn--ghost {
+  background: transparent;
+  color: var(--plum);
+  box-shadow: inset 0 0 0 2px var(--gold);
+}
+.btn--block { width: 100%; }
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+
+.field { text-align: left; margin-bottom: 14px; }
+.field label { display: block; font-weight: 700; font-size: .9rem; color: var(--plum); margin-bottom: 6px; }
+.field input {
+  width: 100%;
+  padding: 13px 16px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--cream-light);
+  border: 2px solid rgba(212, 163, 115, .6);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.field input:focus { border-color: var(--plum); box-shadow: 0 0 0 4px rgba(107, 45, 92, .15); }
+
+/* ---------- Antwoordopties ---------- */
+.options { display: grid; gap: 12px; margin-top: 14px; }
+.option {
+  appearance: none;
+  text-align: left;
+  font: inherit;
+  font-weight: 600;
+  color: var(--ink);
+  padding: 16px 18px;
+  background: var(--cream-light);
+  border: 2px solid rgba(212, 163, 115, .55);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(107, 45, 92, .08);
+  transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.option::before {
+  content: attr(data-letter);
+  flex: 0 0 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  color: var(--plum);
+  background: linear-gradient(135deg, var(--rose), var(--cream));
+  border-radius: 50%;
+}
+.option:hover { transform: translateY(-2px); border-color: var(--plum-soft); box-shadow: var(--shadow-soft); }
+.option.selected {
+  border-color: var(--plum);
+  background: linear-gradient(135deg, #fff4e0, #fbe3e3);
+  box-shadow: var(--shadow-glow);
+}
+.option.selected::before { content: "💗"; background: transparent; font-size: 1.3rem; }
+.option.locked { pointer-events: none; opacity: .75; }
+
+/* ---------- Wachtruimte / QR ---------- */
+.room-id {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 7vw, 2.1rem);
+  letter-spacing: 3px;
+  color: var(--plum);
+  background: var(--cream-light);
+  padding: 10px 22px;
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--gold);
+  margin: 6px 0 14px;
+  user-select: all;
+}
+.qr-frame {
+  display: inline-grid;
+  place-items: center;
+  padding: 14px;
+  background: #fff;
+  border-radius: var(--radius-md);
+  border: 3px solid var(--gold);
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 12px;
+}
+.qr-frame canvas, .qr-frame img { display: block; border-radius: 8px; }
+
+.partner-status { display: flex; gap: 10px; justify-content: center; margin: 14px 0 6px; flex-wrap: wrap; }
+.player-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-radius: var(--radius-pill);
+  background: var(--cream-light); border: 1.5px solid var(--gold);
+  font-weight: 700; font-size: .95rem;
+}
+.player-pill .dot { width: 10px; height: 10px; border-radius: 50%; background: #c9b4a0; }
+.player-pill.ready .dot { background: var(--success); box-shadow: 0 0 0 4px rgba(94, 159, 122, .25); }
+.player-pill.waiting .dot { animation: pulse 1.4s ease-in-out infinite; }
+
+/* ---------- Lottie ---------- */
+.lottie-wrap {
+  position: relative;
+  width: min(260px, 70%);
+  aspect-ratio: 1;
+  margin: 0 auto 10px;
+  display: grid;
+  place-items: center;
+}
+.lottie-wrap dotlottie-player { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; }
+.lottie-fallback {
+  font-size: 4.5rem;
+  animation: floatSoft 3.2s ease-in-out infinite;
+  filter: drop-shadow(0 8px 12px rgba(107, 45, 92, .25));
+}
+
+/* ---------- Match-reveal ---------- */
+.reveal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+.reveal-box {
+  background: var(--cream-light);
+  border: 2px solid rgba(212, 163, 115, .6);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  text-align: left;
+  font-size: .95rem;
+  animation: popIn .5s cubic-bezier(.3, 1.6, .5, 1) both;
+}
+.reveal-box:nth-child(2) { animation-delay: .25s; }
+.reveal-box small { display: block; font-weight: 800; color: var(--plum); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+
+.match-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.15rem;
+  padding: 10px 20px; border-radius: var(--radius-pill);
+  animation: popIn .6s cubic-bezier(.3, 1.8, .5, 1) both;
+}
+.match-badge.match  { color: #fff; background: linear-gradient(135deg, var(--plum), var(--petal-red)); box-shadow: 0 8px 22px rgba(179, 32, 63, .35); }
+.match-badge.differ { color: var(--plum-deep); background: linear-gradient(135deg, var(--cream), var(--rose)); box-shadow: var(--shadow-soft); }
+
+/* ---------- Scorescherm ---------- */
+.score-ring {
+  --pct: 0;
+  width: 170px; height: 170px; margin: 8px auto 16px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background:
+    radial-gradient(closest-side, var(--cream-light) 74%, transparent 76% 100%),
+    conic-gradient(var(--plum) calc(var(--pct) * 1%), rgba(212, 163, 115, .35) 0);
+  box-shadow: var(--shadow-soft);
+  position: relative;
+}
+.score-ring strong { font-family: var(--font-display); font-size: 2.4rem; color: var(--plum); }
+.score-ring .heart-top { position: absolute; top: -14px; right: 6px; font-size: 1.9rem; animation: heartbeat 1.4s ease-in-out infinite; }
+
+/* =========================================================
+   GESPREKSKAART – overlay na elke ronde
+   ========================================================= */
+.overlay {
+  position: fixed; inset: 0; z-index: 100;
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 18px;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(232, 180, 184, .25), transparent 55%),
+    rgba(74, 29, 64, .78);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.overlay.open { display: flex; animation: fadeIn .35s ease both; }
+
+.convo-card {
+  position: relative;
+  width: min(100%, 480px);
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 34px 26px 26px;
+  text-align: center;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(232, 180, 184, .45), transparent 45%),
+    radial-gradient(circle at 0% 100%, rgba(212, 163, 115, .35), transparent 45%),
+    var(--cream);
+  border-radius: 34px;
+  border: 3px solid var(--gold);
+  box-shadow:
+    0 0 0 8px rgba(250, 237, 205, .18),
+    0 30px 80px rgba(0, 0, 0, .45);
+  animation: cardIn .7s cubic-bezier(.2, 1.4, .4, 1) both;
+}
+/* sierrand */
+.convo-card::before {
+  content: "";
+  position: absolute; inset: 9px;
+  border: 1.5px dashed rgba(107, 45, 92, .35);
+  border-radius: 26px;
+  pointer-events: none;
+}
+.convo-card .corner { position: absolute; font-size: 1.4rem; animation: twinkle 2.6s ease-in-out infinite; }
+.convo-card .corner.tl { top: 14px; left: 18px; }
+.convo-card .corner.tr { top: 14px; right: 18px; animation-delay: .5s; }
+.convo-card .corner.bl { bottom: 14px; left: 18px; animation-delay: 1s; }
+.convo-card .corner.br { bottom: 14px; right: 18px; animation-delay: 1.5s; }
+
+.convo-kicker {
+  font-weight: 800; font-size: .78rem; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--plum-soft); margin-bottom: 6px;
+}
+.convo-title { font-size: clamp(1.45rem, 6vw, 1.9rem); margin-bottom: 14px; }
+.convo-title::after {
+  content: "❦";
+  display: block; margin-top: 6px; font-size: 1.1rem; color: var(--gold);
+}
+.convo-prompt {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.1rem;
+  line-height: 1.55;
+  color: var(--plum-deep);
+  background: rgba(255, 248, 234, .75);
+  border-radius: var(--radius-md);
+  padding: 16px 16px;
+  margin-bottom: 14px;
+  box-shadow: inset 0 0 0 1.5px rgba(212, 163, 115, .6);
+}
+.convo-context {
+  text-align: left;
+  font-size: .92rem;
+  color: var(--ink-soft);
+  background: linear-gradient(135deg, rgba(107, 45, 92, .08), rgba(232, 180, 184, .25));
+  border-left: 4px solid var(--plum);
+  border-radius: 6px var(--radius-md) var(--radius-md) 6px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+}
+.convo-context b { color: var(--plum); display: block; margin-bottom: 2px; }
+
+/* =========================================================
+   ROZENBLAADJES (achtergrond)
+   ========================================================= */
+.petals { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.petal {
+  position: absolute;
+  top: -8vh;
+  left: calc(var(--x, 50) * 1%);
+  width: calc(var(--s, 16) * 1px);
+  height: calc(var(--s, 16) * 1.25px);
+  background: radial-gradient(circle at 30% 25%, #E0476A 0%, var(--petal-red) 45%, var(--petal-red-dark) 100%);
+  border-radius: 150% 0 150% 0;
+  opacity: .8;
+  filter: drop-shadow(0 3px 4px rgba(126, 18, 48, .3));
+  animation:
+    petalFall var(--d, 16s) linear var(--delay, 0s) infinite,
+    petalSway calc(var(--d, 16s) / 4) ease-in-out var(--delay, 0s) infinite alternate;
+  will-change: transform;
+}
+.petal:nth-child(1)  { --x: 4;  --s: 14; --d: 17s; --delay: -2s; }
+.petal:nth-child(2)  { --x: 12; --s: 20; --d: 21s; --delay: -9s; }
+.petal:nth-child(3)  { --x: 21; --s: 12; --d: 15s; --delay: -5s; }
+.petal:nth-child(4)  { --x: 30; --s: 18; --d: 19s; --delay: -13s; }
+.petal:nth-child(5)  { --x: 39; --s: 15; --d: 23s; --delay: -7s; }
+.petal:nth-child(6)  { --x: 48; --s: 22; --d: 20s; --delay: -16s; }
+.petal:nth-child(7)  { --x: 57; --s: 13; --d: 16s; --delay: -3s; }
+.petal:nth-child(8)  { --x: 66; --s: 19; --d: 22s; --delay: -11s; }
+.petal:nth-child(9)  { --x: 74; --s: 16; --d: 18s; --delay: -14s; }
+.petal:nth-child(10) { --x: 82; --s: 21; --d: 24s; --delay: -6s; }
+.petal:nth-child(11) { --x: 90; --s: 14; --d: 17s; --delay: -10s; }
+.petal:nth-child(12) { --x: 96; --s: 17; --d: 20s; --delay: -1s; }
+
+@keyframes petalFall {
+  0%   { transform: translate3d(0, -10vh, 0) rotate(0deg); }
+  100% { transform: translate3d(0, 112vh, 0) rotate(540deg); }
+}
+@keyframes petalSway {
+  from { margin-left: -28px; }
+  to   { margin-left: 28px; }
+}
+
+/* =========================================================
+   KISSES, HARTJES & SPRANKELS
+   ========================================================= */
+.burst-layer { position: fixed; inset: 0; z-index: 200; pointer-events: none; overflow: hidden; }
+.burst-item {
+  position: absolute;
+  font-size: var(--size, 1.8rem);
+  left: var(--x, 50%);
+  top: var(--y, 60%);
+  animation: kissFloat var(--dur, 1.8s) ease-out forwards;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+}
+@keyframes kissFloat {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(.3) rotate(0deg); }
+  15%  { opacity: 1; transform: translate(-50%, -80%) scale(1.25) rotate(-8deg); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% - var(--dy, 220px))) scale(.9) rotate(var(--rot, 14deg)); }
+}
+
+.kiss-pop { display: inline-block; animation: kissPop 1.6s ease-in-out infinite; }
+.sparkle  { display: inline-block; animation: twinkle 2s ease-in-out infinite; }
+.heart-beat { display: inline-block; animation: heartbeat 1.4s ease-in-out infinite; }
+
+/* ---------- Gedeelde keyframes ---------- */
+@keyframes twinkle {
+  0%, 100% { opacity: .55; transform: scale(.85) rotate(0deg); }
+  50%      { opacity: 1;   transform: scale(1.2) rotate(12deg); }
+}
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14%      { transform: scale(1.25); }
+  28%      { transform: scale(1); }
+  42%      { transform: scale(1.18); }
+  70%      { transform: scale(1); }
+}
+@keyframes kissPop {
+  0%, 100% { transform: scale(1) rotate(-6deg); }
+  50%      { transform: scale(1.22) rotate(8deg); }
+}
+@keyframes floatSoft {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: .4; transform: scale(.8); }
+}
+@keyframes popIn {
+  0%   { opacity: 0; transform: scale(.7); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cardIn {
+  0%   { opacity: 0; transform: translateY(40px) scale(.85) rotate(-2deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* ---------- Kleine schermen ---------- */
+@media (max-width: 380px) {
+  .card { padding: 22px 16px; }
+  .reveal-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- Toegankelijkheid: minder beweging ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .petal, .burst-item, .lottie-fallback, .heart-beat, .kiss-pop, .sparkle,
+  .logo .spark, .convo-card .corner, .score-ring .heart-top { animation: none !important; }
+  .petal { opacity: .35; }
+  .screen, .convo-card, .overlay.open { animation-duration: .01s !important; }
+}

@@ -1,0 +1,249 @@
+{
+  "meta": {
+    "app": "Habibi Sparks",
+    "version": "1.0.0",
+    "language": "nl",
+    "scoring": { "matchPoints": 10, "differPoints": 5, "note": "Bij 'couple_alignment' is er geen goed of fout: gelijke keuze = match, verschillende keuze = spark (gespreksstof). Beide geven punten, zodat verschil nooit als falen voelt." },
+    "disclaimer": "Bronverwijzingen zijn bedoeld als gespreksinspiratie. Laat Koranvertalingen en hadithgraderingen controleren door een kundige imam of geleerde voordat je ze publiceert."
+  },
+
+  "categories": {
+    "liefdestalen_ihsan": {
+      "id": "liefdestalen_ihsan",
+      "name": "Liefdestalen & Ihsan",
+      "icon": "💌",
+      "order": 1,
+      "description": "Hoe geef en ontvang je liefde – en hoe laat je ihsan (het mooiste doen) zien?"
+    },
+    "emotionele_veiligheid_conflict": {
+      "id": "emotionele_veiligheid_conflict",
+      "name": "Emotionele Veiligheid & Conflict",
+      "icon": "🛡️",
+      "order": 2,
+      "description": "Veilig zijn bij elkaar, ook als het schuurt."
+    },
+    "innerlijke_rust_thuis": {
+      "id": "innerlijke_rust_thuis",
+      "name": "Innerlijke Rust & Thuis",
+      "icon": "🏡",
+      "order": 3,
+      "description": "Sakina: een thuis waar je hart tot rust komt."
+    },
+    "dromen_groei_geloof": {
+      "id": "dromen_groei_geloof",
+      "name": "Dromen, Groei & Geloof",
+      "icon": "🌙",
+      "order": 4,
+      "description": "Samen groeien richting jullie dromen en richting Allah."
+    },
+    "intimiteit_romantiek": {
+      "id": "intimiteit_romantiek",
+      "name": "Intimiteit & Romantiek",
+      "icon": "🌹",
+      "order": 5,
+      "description": "Speelsheid, tederheid en nabijheid binnen het huwelijk."
+    }
+  },
+
+  "questions": {
+    "q_lt_001": {
+      "id": "q_lt_001",
+      "category": "Liefdestalen & Ihsan",
+      "categoryId": "liefdestalen_ihsan",
+      "order": 1,
+      "type": "couple_alignment",
+      "questionText": "Wat laat jou het meest voelen dat je partner van je houdt?",
+      "options": [
+        { "id": "a", "text": "Lieve, oprechte woorden en complimenten", "tag": "words" },
+        { "id": "b", "text": "Onverdeelde aandacht: samen tijd doorbrengen zonder telefoon", "tag": "quality_time" },
+        { "id": "c", "text": "Daden: dat mijn partner iets voor me regelt of van me overneemt", "tag": "acts_of_service" },
+        { "id": "d", "text": "Een attent cadeautje of een klein gebaar waaruit blijkt dat hij/zij aan me dacht", "tag": "gifts" }
+      ],
+      "conversationCard": {
+        "insightTitle": "Liefde spreekt meer dan één taal",
+        "discussionPrompt": "Vertel elkaar om de beurt over één moment van de afgelopen maand waarop je je écht geliefd voelde. Wat deed de ander precies? En wat zou je graag vaker ontvangen?",
+        "islamicContext": "Er wordt overgeleverd dat de Profeet ﷺ geschenken aanmoedigde als manier om liefde tussen mensen te laten groeien (al-Adab al-Mufrad). Ook sprak hij zijn liefde openlijk uit: toen hem werd gevraagd wie hem het dierbaarst was, noemde hij Aisha (Bukhari, Muslim). Liefde mag dus gezien en gehoord worden."
+      }
+    },
+
+    "q_lt_002": {
+      "id": "q_lt_002",
+      "category": "Liefdestalen & Ihsan",
+      "categoryId": "liefdestalen_ihsan",
+      "order": 2,
+      "type": "couple_alignment",
+      "questionText": "Hoe laat jij het liefst ihsan zien in jullie dagelijks leven?",
+      "options": [
+        { "id": "a", "text": "Door zorgtaken en huishouden eerlijk en met plezier te delen", "tag": "acts_of_service" },
+        { "id": "b", "text": "Door mijn partner te noemen in mijn du'a", "tag": "spiritual" },
+        { "id": "c", "text": "Door midden op de dag een lief berichtje te sturen", "tag": "words" },
+        { "id": "d", "text": "Door een verrassing te regelen waar mijn partner blij van wordt", "tag": "gifts" }
+      ],
+      "conversationCard": {
+        "insightTitle": "Ihsan zit in de kleine dingen",
+        "discussionPrompt": "Noem één klein ding dat je partner afgelopen week deed en dat je raakte. Kies daarna samen één klein gebaar voor de komende week en spreek de intentie (niyyah) uit om het voor Allah te doen.",
+        "islamicContext": "Allah gebiedt rechtvaardigheid en ihsan (Koran 16:90). Aisha vertelde dat de Profeet ﷺ thuis meehielp in het huishouden en opstond voor het gebed zodra de adhan klonk (Bukhari). Ihsan begint dus op de keukenvloer, niet alleen op de gebedsmat."
+      }
+    },
+
+    "q_es_001": {
+      "id": "q_es_001",
+      "category": "Emotionele Veiligheid & Conflict",
+      "categoryId": "emotionele_veiligheid_conflict",
+      "order": 1,
+      "type": "couple_alignment",
+      "questionText": "Wat heb je het meest nodig tijdens een meningsverschil?",
+      "options": [
+        { "id": "a", "text": "Even pauze om af te koelen, en daarna rustig verder praten", "tag": "space" },
+        { "id": "b", "text": "Het meteen uitpraten, zodat het niet blijft hangen", "tag": "resolve_now" },
+        { "id": "c", "text": "Dat mijn partner kalm blijft en zacht praat", "tag": "gentle_tone" },
+        { "id": "d", "text": "Een gebaar van toenadering voordat we praten (thee, hand, een 'sorry')", "tag": "repair" }
+      ],
+      "conversationCard": {
+        "insightTitle": "Veiligheid ontstaat in het herstel",
+        "discussionPrompt": "Hoe willen jullie een 'pauzesignaal' afspreken als het te heet wordt? Bedenk een zin die geen aanval is, bijvoorbeeld 'ik wil dit goed doen, mag ik tien minuten?', en spreek af wie na de pauze het gesprek weer opent.",
+        "islamicContext": "De Profeet ﷺ zei dat de sterke niet degene is die anderen overwint, maar degene die zichzelf in bedwang houdt wanneer hij boos is (Bukhari, Muslim). Allah leert ook: weer het kwade af met wat beter is, en degene met wie je vijandschap had, kan als een warme vriend worden (Koran 41:34). Zachtheid (rifq) siert alles waar ze in zit (Muslim)."
+      }
+    },
+
+    "q_es_002": {
+      "id": "q_es_002",
+      "category": "Emotionele Veiligheid & Conflict",
+      "categoryId": "emotionele_veiligheid_conflict",
+      "order": 2,
+      "type": "couple_alignment",
+      "questionText": "Wat maakt dat jij je veilig genoeg voelt om kwetsbaar te zijn bij je partner?",
+      "options": [
+        { "id": "a", "text": "Dat mijn gevoelens serieus worden genomen, zonder meteen een oplossing", "tag": "validation" },
+        { "id": "b", "text": "Dat mijn zwaktes en geheimen tussen ons blijven", "tag": "privacy" },
+        { "id": "c", "text": "Dat we na een spanning weer samen kunnen lachen", "tag": "humor_repair" },
+        { "id": "d", "text": "Dat oude fouten niet bij elke ruzie weer op tafel komen", "tag": "forgiveness" }
+      ],
+      "conversationCard": {
+        "insightTitle": "Kwetsbaarheid heeft een veilige haven nodig",
+        "discussionPrompt": "Deel om de beurt één ding waar je je onzeker over voelt. De ander luistert zonder te verbeteren of op te lossen en zegt alleen: 'Dank dat je dit met me deelt.' Wat had je nodig om dit te kunnen zeggen?",
+        "islamicContext": "Allah noemt echtgenoten 'een kleding voor elkaar' (Koran 2:187): kleding bedekt, beschermt en siert. De Profeet ﷺ zei ook dat wie de gebreken van een ander bedekt, door Allah bedekt wordt (Muslim). Een gelovige man mag zijn vrouw niet haten: mist hij één eigenschap, dan is er wel een andere waar hij blij mee is (Muslim). Dat geldt ook andersom."
+      }
+    },
+
+    "q_ir_001": {
+      "id": "q_ir_001",
+      "category": "Innerlijke Rust & Thuis",
+      "categoryId": "innerlijke_rust_thuis",
+      "order": 1,
+      "type": "couple_alignment",
+      "questionText": "Wat maakt van jullie huis een plek van rust (sakina)?",
+      "options": [
+        { "id": "a", "text": "Een vaste, rustige avondroutine, met samen gebed en dhikr", "tag": "ritual" },
+        { "id": "b", "text": "Een opgeruimd, gezellig huis waar het fijn ruikt en zacht licht is", "tag": "atmosphere" },
+        { "id": "c", "text": "Minder schermen en meer écht gesprek", "tag": "connection" },
+        { "id": "d", "text": "Samen koken en aan één tafel eten", "tag": "shared_meals" }
+      ],
+      "conversationCard": {
+        "insightTitle": "Sakina bouw je, ze valt niet zomaar uit de lucht",
+        "discussionPrompt": "Welk moment van de dag voelt het meest 'thuis' en welk moment het meest gehaast? Kies samen één kleine gewoonte, bijvoorbeeld tien telefoonvrije minuten na maghrib, om de rust te vergroten.",
+        "islamicContext": "'En onder Zijn tekenen is dat Hij voor jullie echtgenoten uit jezelf schiep, opdat jullie rust bij hen vinden, en Hij legde liefde en barmhartigheid tussen jullie' (Koran 30:21). Rust (sakina) is hier iets wat echtgenoten voor elkaar zijn. Ook zegt Allah dat harten rust vinden in Zijn gedenken (Koran 13:28)."
+      }
+    },
+
+    "q_ir_002": {
+      "id": "q_ir_002",
+      "category": "Innerlijke Rust & Thuis",
+      "categoryId": "innerlijke_rust_thuis",
+      "order": 2,
+      "type": "couple_alignment",
+      "questionText": "Hoe verdelen jullie het liefst de zorg voor huis en gezin?",
+      "options": [
+        { "id": "a", "text": "Vaste taken per persoon, zodat het duidelijk is", "tag": "fixed_roles" },
+        { "id": "b", "text": "Flexibel: wie tijd en energie heeft, pakt het op", "tag": "flexible" },
+        { "id": "c", "text": "Taken wekelijks afwisselen", "tag": "rotating" },
+        { "id": "d", "text": "Zo veel mogelijk samen doen, dan voelt het als quality time", "tag": "together" }
+      ],
+      "conversationCard": {
+        "insightTitle": "Zichtbaar maken wat onzichtbaar is",
+        "discussionPrompt": "Welke taak in huis of gezin kost jou de meeste energie, maar wordt het minst gezien? Laat je partner dit eerst in eigen woorden samenvatten voordat jullie een nieuwe verdeling afspreken.",
+        "islamicContext": "Aisha vertelde dat de Profeet ﷺ zich bezighield met het dienen van zijn gezin en opstond voor het gebed als de adhan klonk (Bukhari). Hij zei ook: 'De beste van jullie is degene die het beste is voor zijn gezin, en ik ben de beste voor mijn gezin' (Tirmidhi). Zorgen voor thuis is dus een daad van aanbidding, voor beiden."
+      }
+    },
+
+    "q_dg_001": {
+      "id": "q_dg_001",
+      "category": "Dromen, Groei & Geloof",
+      "categoryId": "dromen_groei_geloof",
+      "order": 1,
+      "type": "couple_alignment",
+      "questionText": "Op welke manier willen jullie samen groeien in jullie geloof?",
+      "options": [
+        { "id": "a", "text": "Vaste momenten samen Koran lezen en bespreken", "tag": "quran" },
+        { "id": "b", "text": "Elkaar zachtjes wekken en samen extra nachtgebed (tahajjud) doen", "tag": "night_prayer" },
+        { "id": "c", "text": "Samen leren: een lezing, studiekring of cursus volgen", "tag": "learning" },
+        { "id": "d", "text": "Samen goede daden doen: sadaqa, vrijwilligerswerk, familie bezoeken", "tag": "service" }
+      ],
+      "conversationCard": {
+        "insightTitle": "Samen groeien zonder druk",
+        "discussionPrompt": "Waar voel jij je dichtbij Allah en wat helpt je daarbij? Bespreek hoe jullie elkaar kunnen steunen zonder te controleren, bijvoorbeeld met een zachte uitnodiging in plaats van een verwijt.",
+        "islamicContext": "Een smeekbede uit de Koran luidt: 'Onze Heer, schenk ons in onze echtgenoten en nakomelingen een vreugde voor de ogen en maak ons een voorbeeld voor de godvrezenden' (Koran 25:74). Allah gebiedt ook elkaar te helpen in rechtschapenheid en godsbewustzijn (Koran 5:2). Er wordt overgeleverd dat de Profeet ﷺ echtparen prees die elkaar zachtjes wekken voor het nachtgebed (Abu Dawud)."
+      }
+    },
+
+    "q_dg_002": {
+      "id": "q_dg_002",
+      "category": "Dromen, Groei & Geloof",
+      "categoryId": "dromen_groei_geloof",
+      "order": 2,
+      "type": "couple_alignment",
+      "questionText": "Welke droom willen jullie de komende vijf jaar samen waarmaken?",
+      "options": [
+        { "id": "a", "text": "Een eigen thuis opbouwen of verhuizen naar een plek waar we willen wonen", "tag": "home" },
+        { "id": "b", "text": "Samen op hajj of umrah gaan", "tag": "pilgrimage" },
+        { "id": "c", "text": "Ons gezin starten of uitbreiden", "tag": "family" },
+        { "id": "d", "text": "Persoonlijke groei: studie, carrière of een eigen project, en elkaar daarin steunen", "tag": "growth" }
+      ],
+      "conversationCard": {
+        "insightTitle": "Een droom wordt een plan als je hem hardop zegt",
+        "discussionPrompt": "Schrijf elk apart op wat de eerste kleine stap is richting jullie gekozen droom, en leg ze naast elkaar. Wat kun je de komende dertig dagen doen? Overleg (shura) ook: waar zit nog twijfel of angst?",
+        "islamicContext": "Allah verandert de toestand van mensen niet totdat zij veranderen wat in henzelf is (Koran 13:11): groei begint met een eigen stap. Overleg (shura) is een Koranisch principe (Koran 3:159, 42:38). Bij Hudaybiyyah luisterde de Profeet ﷺ naar het advies van zijn echtgenote Umm Salama (Bukhari): ook belangrijke beslissingen worden samen genomen."
+      }
+    },
+
+    "q_ii_001": {
+      "id": "q_ii_001",
+      "category": "Intimiteit & Romantiek",
+      "categoryId": "intimiteit_romantiek",
+      "order": 1,
+      "type": "couple_alignment",
+      "questionText": "Wat maakt een avond voor jullie tweeën echt romantisch?",
+      "options": [
+        { "id": "a", "text": "Een wandeling of uitje in de natuur, hand in hand", "tag": "outdoors" },
+        { "id": "b", "text": "Samen koken en eten bij kaarslicht", "tag": "dinner" },
+        { "id": "c", "text": "Een spelletje of wedstrijdje, waarbij we flink lachen", "tag": "playful" },
+        { "id": "d", "text": "Diep praten onder een deken met thee", "tag": "deep_talk" }
+      ],
+      "conversationCard": {
+        "insightTitle": "Spelen en lachen is ook sunnah",
+        "discussionPrompt": "Plan samen een date in de komende twee weken die volledig dáár past waar jullie net voor kozen. Wie regelt wat? En wat is jullie 'telefoon-weg'-afspraak voor die avond?",
+        "islamicContext": "Aisha vertelde dat zij een wedstrijd in hardlopen deed met de Profeet ﷺ: de eerste keer won zij, later toen zij zwaarder was geworden won hij en zei: 'Dit is voor die keer.' (Abu Dawud, Ahmad). Speelsheid tussen echtgenoten hoort bij de sunnah."
+      }
+    },
+
+    "q_ii_002": {
+      "id": "q_ii_002",
+      "category": "Intimiteit & Romantiek",
+      "categoryId": "intimiteit_romantiek",
+      "order": 2,
+      "type": "couple_alignment",
+      "questionText": "Hoe laat jij je liefde en aantrekking het liefst zien binnen jullie huwelijk?",
+      "options": [
+        { "id": "a", "text": "Met een oprecht compliment over hoe mijn partner is of eruitziet", "tag": "compliment" },
+        { "id": "b", "text": "Met een lange, warme omhelzing als we thuiskomen", "tag": "touch" },
+        { "id": "c", "text": "Met een koosnaampje of een eigen grapje alleen van ons", "tag": "nickname" },
+        { "id": "d", "text": "Met een briefje of voice-note: 'ik denk aan je'", "tag": "note" }
+      ],
+      "conversationCard": {
+        "insightTitle": "Tederheid is een taal die je blijft leren",
+        "discussionPrompt": "Vertel elkaar in je eigen tempo en op een manier die voor jullie allebei prettig voelt: welk klein gebaar van nabijheid mis je soms, en welk gebaar maakt je juist blij? Er zijn geen foute antwoorden, alleen informatie over elkaar.",
+        "islamicContext": "De Profeet ﷺ sprak Aisha liefdevol aan met een verkorte koosnaam, 'Ya Aish' (Bukhari, Muslim). Aisha vertelde ook dat hij zijn mond plaatste waar zij had gedronken, een klein, teder gebaar (Muslim). De Koran noemt de liefde en barmhartigheid tussen echtgenoten een teken van Allah (Koran 30:21)."
+      }
+    }
+  }
+}
