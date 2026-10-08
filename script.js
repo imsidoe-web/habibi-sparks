@@ -42,15 +42,18 @@ function clearTimers() { state.timers.forEach(clearTimeout); state.timers = []; 
    Browsers blokkeren geluid zolang de gebruiker nog niets heeft
    aangetikt, daarom start alles pas na een tik op een knop.
    ========================================================= */
-const WELCOME_TEXT =
-  "Assalamu alaikum, en welkom bij Habibi Sparks. Neem samen even de tijd. " +
+const WELCOME_FILE = "welkom.mp3";                       // eigen opname (optioneel, klinkt het mooist)
+const WELCOME_AR = "السلام عليكم ورحمة الله";              // wordt met een Arabische stem uitgesproken
+const WELCOME_AR_PHONETIC = "Assalaam oe aleikoem";      // reserve als het toestel geen Arabische stem heeft
+const WELCOME_NL =
+  "En welkom bij Habibi Sparks. Neem samen even de tijd. " +
   "Beantwoord de vragen eerlijk, vier wat jullie gemeen hebben, " +
-  "en praat daarna door met de gesprekskaarten. Bismillah, laten we beginnen.";
+  "en praat daarna door met de gesprekskaarten. Bismillaah, laten we beginnen.";
 const MUSIC_FILE = "nasheed.mp3";        // zachte nasheed/humming, zonder instrumenten (zelf toevoegen)
 const MUSIC_VOLUME = 0.28;               // achtergrondvolume
 const MUSIC_DUCKED = 0.08;               // volume terwijl de stem spreekt
 
-const sound = { on: false, music: null, musicOk: true, utter: null };
+const sound = { on: false, music: null, musicOk: true, utter: null, welcomeAudio: null, welcomeOk: true };
 const hasSpeech = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
 
 function getMusic() {
@@ -74,30 +77,71 @@ function startMusic() {
 function stopMusic() { if (sound.music) sound.music.pause(); }
 function duckMusic(on) { if (sound.music) sound.music.volume = on ? MUSIC_DUCKED : MUSIC_VOLUME; }
 
+/* Stemkeuze: liefst een vrouwelijke Nederlandse stem; de groet gaat met een Arabische stem */
+const FEMALE_HINT = /colette|fenna|claire|ellen|google nederlands|female|vrouw/i;
+const MALE_HINT = /maarten|xander|frank|\bmale\b|\bman\b|david|mark/i;
+
 function pickDutchVoice() {
-  const voices = speechSynthesis.getVoices();
-  return voices.find(v => /^nl[-_]NL/i.test(v.lang)) || voices.find(v => /^nl/i.test(v.lang)) || null;
+  const nl = speechSynthesis.getVoices().filter(v => /^nl/i.test(v.lang));
+  return nl.find(v => FEMALE_HINT.test(v.name) && !MALE_HINT.test(v.name))
+      || nl.find(v => !MALE_HINT.test(v.name))
+      || nl[0] || null;
 }
+function pickArabicVoice() {
+  const ar = speechSynthesis.getVoices().filter(v => /^ar/i.test(v.lang));
+  return ar.find(v => FEMALE_HINT.test(v.name) && !MALE_HINT.test(v.name)) || ar[0] || null;
+}
+if (hasSpeech) speechSynthesis.getVoices();           // laat de browser alvast de stemmenlijst laden
+
 function stopVoice() {
   sound.utter = null;
+  if (sound.welcomeAudio) { sound.welcomeAudio.pause(); sound.welcomeAudio = null; }
   if (hasSpeech) speechSynthesis.cancel();
   duckMusic(false);
 }
+
+/* Reserve: stem van het toestel. Eerst de Arabische groet, daarna de Nederlandse tekst. */
 function speakWelcome() {
   if (!hasSpeech) return false;
   stopVoice();
-  const u = new SpeechSynthesisUtterance(WELCOME_TEXT);
-  u.lang = "nl-NL";
-  u.rate = 0.92;
-  const v = pickDutchVoice();
-  if (v) u.voice = v;
-  const done = () => { if (sound.utter === u) { sound.utter = null; duckMusic(false); } };
-  u.onstart = () => { if (sound.utter === u) duckMusic(true); };
-  u.onend = done;
-  u.onerror = done;
-  sound.utter = u;
-  speechSynthesis.speak(u);
+  const arVoice = pickArabicVoice();
+  const nlVoice = pickDutchVoice();
+  const parts = [
+    arVoice
+      ? { text: WELCOME_AR, lang: "ar-SA", voice: arVoice, rate: 0.8 }
+      : { text: WELCOME_AR_PHONETIC, lang: "nl-NL", voice: nlVoice, rate: 0.85 },
+    { text: WELCOME_NL, lang: "nl-NL", voice: nlVoice, rate: 0.92 }
+  ];
+  const token = {};
+  sound.utter = token;
+  parts.forEach((p, i) => {
+    const u = new SpeechSynthesisUtterance(p.text);
+    u.lang = p.lang;
+    u.rate = p.rate;
+    if (p.voice) u.voice = p.voice;
+    if (i === 0) u.onstart = () => { if (sound.utter === token) duckMusic(true); };
+    if (i === parts.length - 1) {
+      u.onend = u.onerror = () => { if (sound.utter === token) { sound.utter = null; duckMusic(false); } };
+    }
+    speechSynthesis.speak(u);
+  });
   return true;
+}
+
+/* Voorkeur: een eigen opname (welkom.mp3). Bestaat die niet, dan valt het terug op de toestelstem. */
+function playWelcome() {
+  stopVoice();
+  if (!sound.welcomeOk) { speakWelcome(); return; }
+  const a = new Audio(WELCOME_FILE);
+  sound.welcomeAudio = a;
+  a.addEventListener("playing", () => duckMusic(true));
+  a.addEventListener("ended", () => { sound.welcomeAudio = null; duckMusic(false); });
+  a.play().catch(() => {
+    if (sound.welcomeAudio !== a) return;             // intussen gestopt door de gebruiker
+    sound.welcomeAudio = null;
+    sound.welcomeOk = false;
+    speakWelcome();
+  });
 }
 
 function setSound(on) {
@@ -112,7 +156,7 @@ function setSound(on) {
 $("btnSound").addEventListener("click", () => setSound(!sound.on));
 $("btnWelcome").addEventListener("click", () => {
   setSound(true);
-  speakWelcome();
+  playWelcome();
 });
 
 /* Geluid pauzeren als de app naar de achtergrond gaat, en hervatten bij terugkeer */

@@ -1,6 +1,6 @@
 /* Habibi Sparks – service worker (v3, robuust)
    Verhoog CACHE_VERSION bij elke nieuwe release, dan krijgen gebruikers de update. */
-const CACHE_VERSION = "habibi-sparks-v5";
+const CACHE_VERSION = "habibi-sparks-v6";
 const APP_SHELL = [
   "./",
   "index.html",
