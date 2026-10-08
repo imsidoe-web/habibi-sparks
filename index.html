@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#6B2D5C">
   <title>Habibi Sparks</title>
+  <meta name="description" content="Speelse relatie-app voor moslimkoppels: Koran &amp; Sunnah, communicatie en gesprekskaarten.">
+
+  <!-- PWA: installeerbaar op het beginscherm -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon-64.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Habibi Sparks">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <link rel="stylesheet" href="style.css">
 
   <!-- Lottie (dotLottie) player -->
@@ -59,6 +70,15 @@
         <div class="btn-row">
           <button class="btn" id="btnCreate">Kamer maken 💞</button>
           <button class="btn btn--ghost" id="btnJoin">Ik heb een code</button>
+        </div>
+
+        <!-- PWA: Toevoegen aan beginscherm -->
+        <div class="install-box" id="installBox" hidden>
+          <button class="btn btn--ghost btn--block" id="btnInstall" hidden>📲 Zet Habibi Sparks op je beginscherm</button>
+          <p class="install-hint" id="iosHint" hidden>
+            Op iPhone/iPad: open deze pagina in <b>Safari</b>, tik op <b>Deel</b> (het vierkantje met pijl omhoog)
+            en kies <b>“Zet op beginscherm”</b>.
+          </p>
         </div>
       </div>
     </section>
@@ -454,6 +474,44 @@ $("btnAgain").addEventListener("click", () => { state.index = 0; state.matches =
     show("screen-lobby");
     document.querySelector("#screen-lobby > .card").hidden = true;
   }
+})();
+
+/* =========================================================
+   PWA: service worker + "Toevoegen aan beginscherm"
+   ========================================================= */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch((e) => console.warn("Service worker mislukt", e));
+  });
+}
+
+(function setupInstall() {
+  const box = $("installBox"), btn = $("btnInstall"), iosHint = $("iosHint");
+  const isStandalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  if (isStandalone) return;                              // al geïnstalleerd: niets tonen
+
+  let deferred = null;
+  window.addEventListener("beforeinstallprompt", (e) => {   // Android / Chrome / Edge
+    e.preventDefault();
+    deferred = e;
+    box.hidden = false;
+    btn.hidden = false;
+  });
+
+  btn.addEventListener("click", async () => {
+    if (!deferred) return;
+    deferred.prompt();
+    const choice = await deferred.userChoice;
+    deferred = null;
+    if (choice.outcome === "accepted") { box.hidden = true; burst(["💗","✨","💋"], 14); }
+  });
+
+  window.addEventListener("appinstalled", () => { box.hidden = true; burst(["💗","✨","💋"], 18); });
+
+  // iOS Safari kent geen installatie-prompt: toon een korte uitleg
+  const ua = navigator.userAgent;
+  const isIOS = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (isIOS) { box.hidden = false; iosHint.hidden = false; }
 })();
 </script>
 </body>

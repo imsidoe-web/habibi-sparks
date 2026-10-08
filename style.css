@@ -498,3 +498,28 @@ p { margin: 0 0 1em; }
   .petal { opacity: .35; }
   .screen, .convo-card, .overlay.open { animation-duration: .01s !important; }
 }
+
+/* =========================================================
+   PWA: installeren & standalone-modus
+   ========================================================= */
+.install-box { margin-top: 18px; padding-top: 16px; border-top: 1.5px dashed rgba(212, 163, 115, .6); }
+.install-hint {
+  margin: 12px 0 0;
+  font-size: .9rem;
+  color: var(--ink-soft);
+  background: rgba(232, 180, 184, .25);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  text-align: left;
+}
+.install-box[hidden], .install-box [hidden] { display: none !important; }
+
+/* Veilige zones (notch / home-indicator) wanneer de app op het beginscherm staat */
+@media (display-mode: standalone) {
+  .app {
+    padding-top: calc(20px + env(safe-area-inset-top));
+    padding-bottom: calc(60px + env(safe-area-inset-bottom));
+  }
+  body { overscroll-behavior-y: none; -webkit-user-select: none; user-select: none; }
+  .room-id, input { -webkit-user-select: text; user-select: text; }
+}
