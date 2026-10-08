@@ -37,8 +37,93 @@ const state = {
 function later(fn, ms) { state.timers.push(setTimeout(fn, ms)); }
 function clearTimers() { state.timers.forEach(clearTimeout); state.timers = []; }
 
+/* =========================================================
+   GELUID: gesproken welkomst + zachte achtergrond-nasheed
+   Browsers blokkeren geluid zolang de gebruiker nog niets heeft
+   aangetikt, daarom start alles pas na een tik op een knop.
+   ========================================================= */
+const WELCOME_TEXT =
+  "Assalamu alaikum, en welkom bij Habibi Sparks. Neem samen even de tijd. " +
+  "Beantwoord de vragen eerlijk, vier wat jullie gemeen hebben, " +
+  "en praat daarna door met de gesprekskaarten. Bismillah, laten we beginnen.";
+const MUSIC_FILE = "nasheed.mp3";        // zachte nasheed/humming, zonder instrumenten (zelf toevoegen)
+const MUSIC_VOLUME = 0.28;               // achtergrondvolume
+const MUSIC_DUCKED = 0.08;               // volume terwijl de stem spreekt
+
+const sound = { on: false, music: null, musicOk: true, utter: null };
+const hasSpeech = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+
+function getMusic() {
+  if (sound.music) return sound.music;
+  const a = new Audio(MUSIC_FILE);
+  a.loop = true;
+  a.preload = "auto";
+  a.volume = MUSIC_VOLUME;
+  a.addEventListener("error", () => {
+    sound.musicOk = false;
+    console.warn(MUSIC_FILE + " niet gevonden of niet af te spelen");
+  });
+  sound.music = a;
+  return a;
+}
+function startMusic() {
+  if (!sound.musicOk) return;
+  const p = getMusic().play();
+  if (p && p.catch) p.catch((e) => console.warn("Muziek geblokkeerd", e));
+}
+function stopMusic() { if (sound.music) sound.music.pause(); }
+function duckMusic(on) { if (sound.music) sound.music.volume = on ? MUSIC_DUCKED : MUSIC_VOLUME; }
+
+function pickDutchVoice() {
+  const voices = speechSynthesis.getVoices();
+  return voices.find(v => /^nl[-_]NL/i.test(v.lang)) || voices.find(v => /^nl/i.test(v.lang)) || null;
+}
+function stopVoice() {
+  sound.utter = null;
+  if (hasSpeech) speechSynthesis.cancel();
+  duckMusic(false);
+}
+function speakWelcome() {
+  if (!hasSpeech) return false;
+  stopVoice();
+  const u = new SpeechSynthesisUtterance(WELCOME_TEXT);
+  u.lang = "nl-NL";
+  u.rate = 0.92;
+  const v = pickDutchVoice();
+  if (v) u.voice = v;
+  const done = () => { if (sound.utter === u) { sound.utter = null; duckMusic(false); } };
+  u.onstart = () => { if (sound.utter === u) duckMusic(true); };
+  u.onend = done;
+  u.onerror = done;
+  sound.utter = u;
+  speechSynthesis.speak(u);
+  return true;
+}
+
+function setSound(on) {
+  sound.on = on;
+  const b = $("btnSound");
+  b.textContent = on ? "🔊" : "🔇";
+  b.setAttribute("aria-pressed", String(on));
+  b.setAttribute("aria-label", on ? "Geluid uit" : "Geluid aan");
+  if (on) startMusic(); else { stopMusic(); stopVoice(); }
+}
+
+$("btnSound").addEventListener("click", () => setSound(!sound.on));
+$("btnWelcome").addEventListener("click", () => {
+  setSound(true);
+  speakWelcome();
+});
+
+/* Geluid pauzeren als de app naar de achtergrond gaat, en hervatten bij terugkeer */
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") { stopMusic(); stopVoice(); }
+  else if (sound.on) startMusic();
+});
+
 /* ---------- Schermen ---------- */
 function show(id) {
+  if (id !== "screen-start") stopVoice();            // welkomststem stopt zodra je het startscherm verlaat
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   $(id).classList.add("active");
   $("btnBack").hidden = !BACK_SCREENS.includes(id);

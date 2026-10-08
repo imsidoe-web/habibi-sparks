@@ -1,6 +1,6 @@
 /* Habibi Sparks – service worker (v3, robuust)
    Verhoog CACHE_VERSION bij elke nieuwe release, dan krijgen gebruikers de update. */
-const CACHE_VERSION = "habibi-sparks-v4";
+const CACHE_VERSION = "habibi-sparks-v5";
 const APP_SHELL = [
   "./",
   "index.html",
@@ -57,6 +57,9 @@ self.addEventListener("fetch", (event) => {
 
   // Alleen eigen bestanden afhandelen; CDN, lettertypen, Firebase enz. gaan rechtstreeks naar het netwerk
   if (url.origin !== self.location.origin) return;
+
+  // Audio (grote bestanden, Range-verzoeken) rechtstreeks van het netwerk laten komen
+  if (req.headers.has("range") || /\.(mp3|m4a|ogg|wav|aac)$/i.test(url.pathname)) return;
 
   // Pagina's: eerst netwerk, daarna cache, daarna een offline-pagina. Altijd een geldig antwoord.
   if (req.mode === "navigate") {

@@ -583,3 +583,33 @@ p { margin: 0 0 1em; }
 .resume-meta { font-size: .85rem; color: var(--ink-soft); margin: 2px 0 10px; }
 .resume-bar { height: 6px; background: rgba(107, 45, 92, .14); border-radius: var(--radius-pill); overflow: hidden; margin-bottom: 12px; }
 .resume-bar > span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--rose), var(--gold), var(--plum)); border-radius: inherit; }
+
+/* =========================================================
+   GELUID: aan/uit-knop en welkomstknop
+   ========================================================= */
+.sound-toggle {
+  position: fixed;
+  top: calc(12px + env(safe-area-inset-top));
+  right: 12px;
+  z-index: 60;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #ffffff;
+  background: rgba(80, 20, 30, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 4px 14px rgba(80, 20, 30, .22);
+  transition: background .2s ease, transform .18s ease;
+}
+.sound-toggle:hover { background: rgba(80, 20, 30, 0.78); }
+.sound-toggle:active { transform: scale(.94); }
+.sound-toggle[aria-pressed="true"] { background: rgba(107, 45, 92, 0.85); box-shadow: 0 0 0 3px rgba(212, 163, 115, .45), 0 4px 14px rgba(80, 20, 30, .22); }
+.sound-toggle:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.welcome-btn { margin: 0 0 16px; }

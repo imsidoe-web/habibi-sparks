@@ -36,6 +36,9 @@
   <!-- Laag voor kusjes/hartjes -->
   <div class="burst-layer" id="burstLayer" aria-hidden="true"></div>
 
+  <!-- Geluid aan/uit (stem + achtergrondmuziek) -->
+  <button class="sound-toggle" id="btnSound" type="button" aria-pressed="false" aria-label="Geluid aan">🔇</button>
+
   <main class="app">
     <header class="app-header">
       <h1 class="logo">Habibi Sparks <span class="spark">✨</span></h1>
@@ -53,6 +56,9 @@
 
         <h2>Welkom, habibi &amp; habibti</h2>
         <p>Beantwoord samen speelse vragen, ontdek waar jullie op één lijn zitten en praat verder met de gesprekskaarten.</p>
+
+        <!-- Gesproken welkomst + zachte achtergrondmuziek (start na een tik) -->
+        <button class="btn btn--ghost btn--block welcome-btn" id="btnWelcome" type="button">🔊 Luister naar de welkomst</button>
 
         <!-- Opgeslagen spel hervatten (verschijnt alleen als er voortgang is) -->
         <div class="resume-box" id="resumeBox" hidden>
