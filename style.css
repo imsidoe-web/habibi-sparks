@@ -523,3 +523,24 @@ p { margin: 0 0 1em; }
   body { overscroll-behavior-y: none; -webkit-user-select: none; user-select: none; }
   .room-id, input { -webkit-user-select: text; user-select: text; }
 }
+
+/* =========================================================
+   HERO: moslimkoppel (inline SVG)
+   ========================================================= */
+.couple-hero { width: min(300px, 82%); aspect-ratio: 1; margin: 0 auto 8px; }
+.couple-svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.couple-svg .sv-bob { animation: floatSoft 4.5s ease-in-out infinite; }
+.couple-svg .sv-twinkle { transform-box: fill-box; transform-origin: center; animation: twinkle 2.4s ease-in-out infinite; animation-delay: var(--d, 0s); }
+.couple-svg .fh { transform-box: fill-box; transform-origin: center; opacity: 0; animation: heartRise 4.5s ease-in infinite; animation-delay: var(--d, 0s); }
+
+@keyframes heartRise {
+  0%   { opacity: 0;  transform: translate(0, 0) scale(.5); }
+  15%  { opacity: 1; }
+  70%  { opacity: .9; }
+  100% { opacity: 0;  transform: translate(var(--dx, 0px), -125px) scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .couple-svg .sv-bob, .couple-svg .sv-twinkle { animation: none !important; }
+  .couple-svg .fh { animation: none !important; opacity: .9; }
+}
