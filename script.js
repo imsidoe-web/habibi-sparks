@@ -1,16 +1,22 @@
 /* =========================================================
-   Habibi Sparks – script.js
-   Demo-logica (client-side). De plekken waar Firebase komt,
-   zijn gemarkeerd met  // FIREBASE:
+   Habibi Sparks – script.js (Met werkend geluid + Realtime Firebase)
    ========================================================= */
 
-/* Voorgestelde Firebase Realtime Database-structuur:
-   /rooms/{roomId}
-      meta:     { createdAt, status: "lobby"|"playing"|"done", currentIndex }
-      players:  { A: {name, ready}, B: {name, ready} }
-      answers:  { {questionId}: { A: "a", B: "c" } }
-   /content (de inhoud van questions.json)
-*/
+// Firebase Configuratie
+const firebaseConfig = {
+  apiKey: "AIzaSyChU6Lpiyb6jpz0Znl9fT1MatLIrdsdCf8",
+  authDomain: "habibi-sparks.firebaseapp.com",
+  databaseURL: "https://habibi-sparks-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "habibi-sparks",
+  storageBucket: "habibi-sparks.firebasestorage.app",
+  messagingSenderId: "250714297147",
+  appId: "1:250714297147:web:05a57be269ecdc06465d1e"
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
 
 const $ = (id) => document.getElementById(id);
 
@@ -33,25 +39,23 @@ const state = {
   timers: []
 };
 
-/* ---------- Timers (worden gewist bij 'Terug naar Hoofdscherm') ---------- */
+/* ---------- Timers ---------- */
 function later(fn, ms) { state.timers.push(setTimeout(fn, ms)); }
 function clearTimers() { state.timers.forEach(clearTimeout); state.timers = []; }
 
 /* =========================================================
    GELUID: gesproken welkomst + zachte achtergrond-nasheed
-   Browsers blokkeren geluid zolang de gebruiker nog niets heeft
-   aangetikt, daarom start alles pas na een tik op een knop.
    ========================================================= */
-const WELCOME_FILE = "welkom.mp3";                       // eigen opname (optioneel, klinkt het mooist)
-const WELCOME_AR = "السلام عليكم ورحمة الله";              // wordt met een Arabische stem uitgesproken
-const WELCOME_AR_PHONETIC = "Assalaam oe aleikoem";      // reserve als het toestel geen Arabische stem heeft
+const WELCOME_FILE = "welkom.mp3";
+const WELCOME_AR = "السلام عليكم ورحمة الله";
+const WELCOME_AR_PHONETIC = "Assalaam oe aleikoem";
 const WELCOME_NL =
   "En welkom bij Habibi Sparks. Neem samen even de tijd. " +
   "Beantwoord de vragen eerlijk, vier wat jullie gemeen hebben, " +
   "en praat daarna door met de gesprekskaarten. Bismillaah, laten we beginnen.";
-const MUSIC_FILE = "nasheed.mp3";        // zachte nasheed/humming, zonder instrumenten (zelf toevoegen)
-const MUSIC_VOLUME = 0.28;               // achtergrondvolume
-const MUSIC_DUCKED = 0.08;               // volume terwijl de stem spreekt
+const MUSIC_FILE = "nasheed.mp3";
+const MUSIC_VOLUME = 0.28;
+const MUSIC_DUCKED = 0.08;
 
 const sound = { on: false, music: null, musicOk: true, utter: null, welcomeAudio: null, welcomeOk: true };
 const hasSpeech = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
@@ -77,7 +81,6 @@ function startMusic() {
 function stopMusic() { if (sound.music) sound.music.pause(); }
 function duckMusic(on) { if (sound.music) sound.music.volume = on ? MUSIC_DUCKED : MUSIC_VOLUME; }
 
-/* Stemkeuze: liefst een vrouwelijke Nederlandse stem; de groet gaat met een Arabische stem */
 const FEMALE_HINT = /colette|fenna|claire|ellen|google nederlands|female|vrouw/i;
 const MALE_HINT = /maarten|xander|frank|\bmale\b|\bman\b|david|mark/i;
 
@@ -91,7 +94,7 @@ function pickArabicVoice() {
   const ar = speechSynthesis.getVoices().filter(v => /^ar/i.test(v.lang));
   return ar.find(v => FEMALE_HINT.test(v.name) && !MALE_HINT.test(v.name)) || ar[0] || null;
 }
-if (hasSpeech) speechSynthesis.getVoices();           // laat de browser alvast de stemmenlijst laden
+if (hasSpeech) speechSynthesis.getVoices();
 
 function stopVoice() {
   sound.utter = null;
@@ -100,7 +103,6 @@ function stopVoice() {
   duckMusic(false);
 }
 
-/* Reserve: stem van het toestel. Eerst de Arabische groet, daarna de Nederlandse tekst. */
 function speakWelcome() {
   if (!hasSpeech) return false;
   stopVoice();
@@ -128,7 +130,6 @@ function speakWelcome() {
   return true;
 }
 
-/* Voorkeur: een eigen opname (welkom.mp3). Bestaat die niet, dan valt het terug op de toestelstem. */
 function playWelcome() {
   stopVoice();
   if (!sound.welcomeOk) { speakWelcome(); return; }
@@ -137,7 +138,7 @@ function playWelcome() {
   a.addEventListener("playing", () => duckMusic(true));
   a.addEventListener("ended", () => { sound.welcomeAudio = null; duckMusic(false); });
   a.play().catch(() => {
-    if (sound.welcomeAudio !== a) return;             // intussen gestopt door de gebruiker
+    if (sound.welcomeAudio !== a) return;
     sound.welcomeAudio = null;
     sound.welcomeOk = false;
     speakWelcome();
@@ -159,7 +160,6 @@ $("btnWelcome").addEventListener("click", () => {
   playWelcome();
 });
 
-/* Geluid pauzeren als de app naar de achtergrond gaat, en hervatten bij terugkeer */
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") { stopMusic(); stopVoice(); }
   else if (sound.on) startMusic();
@@ -167,7 +167,7 @@ document.addEventListener("visibilitychange", () => {
 
 /* ---------- Schermen ---------- */
 function show(id) {
-  if (id !== "screen-start") stopVoice();            // welkomststem stopt zodra je het startscherm verlaat
+  if (id !== "screen-start") stopVoice();
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   $(id).classList.add("active");
   $("btnBack").hidden = !BACK_SCREENS.includes(id);
@@ -202,16 +202,16 @@ function writeSave() {
       me: state.me,
       nameA: state.nameA,
       nameB: state.nameB,
-      index: state.index,                       // huidige stap (0-based)
+      index: state.index,
       total: state.questions.length,
-      matches: state.matches,                   // score
-      categoryId: q.categoryId || null,         // geselecteerde categorie
+      matches: state.matches,
+      categoryId: q.categoryId || null,
       category: q.category || "",
       questionId: q.id || null,
       chosenId: state.chosen ? state.chosen.id : null,
       lastReveal: state.lastReveal
     }));
-  } catch (e) { /* opslag vol of geblokkeerd: spel werkt gewoon door */ }
+  } catch (e) {}
 }
 
 function clearSave() {
@@ -236,7 +236,6 @@ async function resumeGame() {
   if (!s) { refreshResumeBox(); return; }
   await loadQuestions();
 
-  // Vraag terugvinden op id (werkt ook als questions.json is uitgebreid)
   let idx = s.questionId ? state.questions.findIndex(q => q.id === s.questionId) : s.index;
   if (idx < 0 || idx >= state.questions.length) {
     clearSave();
@@ -277,17 +276,14 @@ function confirmNewGame() {
   return true;
 }
 
-/* Automatisch bewaren zodra de gebruiker de app verlaat of sluit */
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") writeSave(); });
 window.addEventListener("pagehide", writeSave);
 window.addEventListener("beforeunload", writeSave);
 
-/* =========================================================
-   TERUG NAAR HOOFDSCHERM
-   ========================================================= */
+/* ---------- Terug naar Hoofdscherm ---------- */
 function goHome() {
-  writeSave();                                    // voortgang bewaren
-  clearTimers();                                  // lopende demo-timers stoppen
+  writeSave();
+  clearTimers();
   $("convoOverlay").classList.remove("open");
   const lobbyCard = document.querySelector("#screen-lobby > .card");
   if (lobbyCard) lobbyCard.hidden = false;
@@ -296,7 +292,7 @@ function goHome() {
   refreshResumeBox();
 }
 
-/* ---------- Kusjes / hartjes / sprankels ---------- */
+/* ---------- Kusjes / hartjes ---------- */
 function burst(emojis = ["💋","💗","✨","💕"], count = 14, origin) {
   const layer = $("burstLayer");
   const ox = origin ? origin.x : window.innerWidth / 2;
@@ -325,7 +321,7 @@ function makeRoomId(custom) {
   if (!suffix) {
     suffix = Array.from({ length: 4 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join("");
   }
-  return "HABIBI-" + suffix;           // bv. HABIBI-ROOS
+  return "HABIBI-" + suffix;
 }
 
 function renderQR(roomId) {
@@ -339,7 +335,7 @@ function renderQR(roomId) {
       correctLevel: QRCode.CorrectLevel.M
     });
   } else {
-    holder.textContent = url;          // vangnet als de CDN niet laadt
+    holder.textContent = url;
   }
 }
 
@@ -355,18 +351,35 @@ function enterLobby(roomId, asPlayer) {
   $("btnStart").disabled = true;
   renderQR(roomId);
   show("screen-lobby");
-  // FIREBASE: set(ref(db, `rooms/${roomId}/players/${asPlayer}`), { name, ready: true });
-  // FIREBASE: onValue(ref(db, `rooms/${roomId}/players/B`), snap => { ...zet pillB op 'ready'... });
 
-  // Demo: simuleer dat partner B na 2,5 s binnenkomt
-  later(() => {
-    state.nameB = "Partner";
-    $("nameB").textContent = state.nameB;
-    $("pillB").classList.remove("waiting");
-    $("pillB").classList.add("ready");
-    $("btnStart").disabled = false;
-    burst(["💗","✨"], 8);
-  }, 2500);
+  // REALTIME FIREBASE KOPPELING LOBBY
+  const playerRef = db.ref(`rooms/${roomId}/players/${asPlayer}`);
+  playerRef.set({ name: state.nameA, ready: true });
+  playerRef.onDisconnect().remove();
+
+  db.ref(`rooms/${roomId}`).on("value", (snap) => {
+    const room = snap.val();
+    if (!room) return;
+
+    if (room.players) {
+      if (room.players.A && state.me === "B") {
+        state.nameB = room.players.A.name;
+        $("nameA").textContent = room.players.A.name;
+      }
+      if (room.players.B) {
+        if (state.me === "A") state.nameB = room.players.B.name;
+        $("nameB").textContent = room.players.B.name;
+        $("pillB").classList.remove("waiting");
+        $("pillB").classList.add("ready");
+        $("btnStart").disabled = false;
+      }
+    }
+
+    if (room.meta && room.meta.status === "playing" && state.phase === "idle") {
+      state.index = room.meta.currentIndex || 0;
+      renderQuestion();
+    }
+  });
 }
 
 /* ---------- Vragen laden ---------- */
@@ -380,7 +393,6 @@ const FALLBACK_QUESTIONS = [{
 async function loadQuestions() {
   if (state.questions.length) return;
   try {
-    // FIREBASE: get(child(ref(db), "questions")) i.p.v. fetch
     const res = await fetch("questions.json", { cache: "no-store" });
     const data = await res.json();
     state.categoryMeta = data.categories;
@@ -423,7 +435,7 @@ function renderQuestion(preselectId) {
       writeSave();
     });
     box.appendChild(b);
-    if (preselectId && opt.id === preselectId) {      // hervatten: eerdere keuze terugzetten
+    if (preselectId && opt.id === preselectId) {
       b.classList.add("selected");
       state.chosen = opt;
       $("btnLock").disabled = false;
@@ -437,14 +449,22 @@ function renderQuestion(preselectId) {
 function lockAnswer() {
   const q = state.questions[state.index];
   show("screen-wait");
-  // FIREBASE: set(ref(db, `rooms/${state.roomId}/answers/${q.id}/${state.me}`), state.chosen.id);
-  // FIREBASE: onValue(ref(db, `rooms/${state.roomId}/answers/${q.id}`), snap => { als A én B bestaan → reveal(...) });
 
-  // Demo: partner kiest willekeurig na 1,6 s
-  later(() => {
-    const partnerOpt = q.options[Math.floor(Math.random() * q.options.length)];
-    reveal(q, state.chosen, partnerOpt);
-  }, 1600);
+  // REALTIME FIREBASE KOPPELING ANTWOORDEN
+  db.ref(`rooms/${state.roomId}/answers/${q.id}/${state.me}`).set(state.chosen.id);
+
+  const answersRef = db.ref(`rooms/${state.roomId}/answers/${q.id}`);
+  answersRef.on("value", (snap) => {
+    const answers = snap.val();
+    if (answers && answers.A && answers.B) {
+      answersRef.off();
+      const optionA = q.options.find(o => o.id === answers.A);
+      const optionB = q.options.find(o => o.id === answers.B);
+      const mine = state.me === "A" ? optionA : optionB;
+      const theirs = state.me === "A" ? optionB : optionA;
+      reveal(q, mine, theirs);
+    }
+  });
 }
 
 function reveal(q, mine, theirs) {
@@ -503,7 +523,7 @@ function nextStep() {
 
 function showResults() {
   state.phase = "done";
-  clearSave();                                     // spel afgerond: niets meer te hervatten
+  clearSave();
   const pct = Math.round(state.matches / state.questions.length * 100);
   $("scoreValue").textContent = pct + "%";
   $("scoreRing").style.setProperty("--pct", pct);
@@ -519,9 +539,9 @@ function showResults() {
 $("btnCreate").addEventListener("click", async () => {
   if (!confirmNewGame()) return;
   state.nameA = $("playerName").value.trim() || "Jij";
-  state.questions = [];                            // verse vragen laden
+  state.questions = [];
   await loadQuestions();
-  enterLobby(makeRoomId(), "A");                   // bv. makeRoomId("ROOS") → HABIBI-ROOS
+  enterLobby(makeRoomId(), "A");
 });
 
 $("btnResume").addEventListener("click", resumeGame);
@@ -552,8 +572,9 @@ $("btnCopy").addEventListener("click", async () => {
 
 $("btnStart").addEventListener("click", () => {
   state.index = 0; state.matches = 0;
-  renderQuestion();
+  db.ref(`rooms/${state.roomId}/meta`).set({ status: "playing", currentIndex: 0 });
 });
+
 $("btnLock").addEventListener("click", lockAnswer);
 $("btnOpenCard").addEventListener("click", openCard);
 $("btnNext").addEventListener("click", nextStep);
@@ -563,7 +584,6 @@ $("btnAgain").addEventListener("click", () => {
   refreshResumeBox();
 });
 
-/* QR-scan: ?room=HABIBI-ROOS vult de code automatisch in */
 (function autoJoinFromUrl() {
   const room = new URLSearchParams(location.search).get("room");
   if (room) {
@@ -574,12 +594,8 @@ $("btnAgain").addEventListener("click", () => {
   }
 })();
 
-/* Bij het openen: toon "Vervolg laatste spel" als er een opgeslagen spel is */
 refreshResumeBox();
 
-/* =========================================================
-   PWA: service worker + "Toevoegen aan beginscherm"
-   ========================================================= */
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("sw.js").catch((e) => console.warn("Service worker mislukt", e));
@@ -589,10 +605,10 @@ if ("serviceWorker" in navigator) {
 (function setupInstall() {
   const box = $("installBox"), btn = $("btnInstall"), iosHint = $("iosHint");
   const isStandalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
-  if (isStandalone) return;                              // al geïnstalleerd: niets tonen
+  if (isStandalone) return;
 
   let deferred = null;
-  window.addEventListener("beforeinstallprompt", (e) => {   // Android / Chrome / Edge
+  window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     deferred = e;
     box.hidden = false;
@@ -609,7 +625,6 @@ if ("serviceWorker" in navigator) {
 
   window.addEventListener("appinstalled", () => { box.hidden = true; burst(["💗","✨","💋"], 18); });
 
-  // iOS Safari kent geen installatie-prompt: toon een korte uitleg
   const ua = navigator.userAgent;
   const isIOS = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   if (isIOS) { box.hidden = false; iosHint.hidden = false; }
